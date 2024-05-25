@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))//esto mantiene el stateles entre peticiones
                 .authenticationProvider(authenticationProvider)
+                //aqui se verifica el token a traves de JwtAuthenticationFilter
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout ->
                         logout.logoutUrl("/auth/logout")

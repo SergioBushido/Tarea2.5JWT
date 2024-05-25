@@ -34,7 +34,7 @@ public class AuthenticationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuario registrado exitosamente",
                     content = @Content(schema = @Schema(implementation = RegisterRequest.class))),
-                @ApiResponse(responseCode = "404", description = "Usuario no registrado")
+            @ApiResponse(responseCode = "404", description = "Usuario no registrado")
     })
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request

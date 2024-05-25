@@ -1,8 +1,7 @@
 package es.rest.tarea.configurations;
 
-
-import es.rest.tarea.repositories.auth.TokenRepository;
 import es.rest.tarea.services.auth.JwtService;
+import es.rest.tarea.repositories.auth.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,7 +22,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    //Este filtro verifica el usuario utilizando el token
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final TokenRepository tokenRepository;
