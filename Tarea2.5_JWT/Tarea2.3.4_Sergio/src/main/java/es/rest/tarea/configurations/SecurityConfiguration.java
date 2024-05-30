@@ -25,7 +25,10 @@ import static org.springframework.http.HttpMethod.*;
 public class SecurityConfiguration {
     private static final String[] WHITE_LIST = {//la ruta para crear usuario o logearse no requieren autenticacion
             "/auth/**",//todo lo que esta en esta ruta no se le aplica la politica de seguridad
-            "/"
+            "/",
+            "/api/v1/users/**",//para listar usuarios
+            "/api/v1/articles/**",
+            "/api/v1/phones/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

@@ -1,5 +1,6 @@
 package es.rest.tarea.models.auth;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,16 +16,17 @@ public class Token {
     @Id
     @GeneratedValue
     private long id;
+
     private String token;
 
-    @Enumerated(EnumType.STRING)//como persiste el token en la bbdd
-    private TokenType tokenType; 
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType;
 
-    public boolean expired;
-    public boolean revoked;
+    private boolean expired;
+    private boolean revoked;
 
-    @ManyToOne(fetch = FetchType.LAZY)//varios token pueden estar sociados a un usuario y que solo se carga bajo demanda
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    public User user;
-
+    @JsonBackReference
+    private User user;
 }

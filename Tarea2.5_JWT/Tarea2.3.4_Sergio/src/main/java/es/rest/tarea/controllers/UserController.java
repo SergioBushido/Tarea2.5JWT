@@ -1,6 +1,9 @@
 package es.rest.tarea.controllers;
 
 import es.rest.tarea.models.auth.User;
+import es.rest.tarea.models.dto.UserDto;
+import es.rest.tarea.repositories.auth.UserRepository;
+import es.rest.tarea.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -8,9 +11,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Tag(name = "UserController", description = "Controlador para operaciones relacionadas con usuarios")
 @RestController
@@ -19,15 +25,18 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
+    private final UserRepository userRepository;
+    private final UserService userService;
+
     @Operation(summary = "Obtiene todos los usuarios")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de usuarios encontrada exitosamente",
                     content = @Content(schema = @Schema(implementation = User.class)))
     })
     @GetMapping
-    public List<User> getAllUsers() {
-        // Implementar lógica para obtener todos los usuarios
-        return null;  // Simulación de respuesta, reemplazar con lógica real
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @Operation(summary = "Obtiene un usuario por su ID")
@@ -37,31 +46,10 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        // Implementar lógica para obtener un usuario específico por ID
-        return null;  // Simulación de respuesta, reemplazar con lógica real
-    }
-
-    @Operation(summary = "Crea un nuevo usuario")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente",
-                    content = @Content(schema = @Schema(implementation = User.class)))
-    })
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        // Implementar lógica para crear un nuevo usuario
-        return user;  // Simulación de respuesta, reemplazar con lógica real
-    }
-
-    @Operation(summary = "Actualiza un usuario por su ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente",
-                    content = @Content(schema = @Schema(implementation = User.class)))
-    })
-    @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
-        // Implementar lógica para actualizar un usuario por su ID
-        return updatedUser;  // Simulación de respuesta, reemplazar con lógica real
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        Optional<User> user = userService.getUserById(id);
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @Operation(summary = "Elimina un usuario por su ID")
@@ -70,7 +58,36 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Usuario no encontrado")
     })
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        // Implementar lógica para eliminar un usuario por su ID
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User deleted successfully");
     }
+
+    @Operation(summary = "Crea un nuevo usuario")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente",
+                    content = @Content(schema = @Schema(implementation = User.class)))
+    })
+    @PostMapping
+    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userdto) {
+        UserDto createdUser = userService.createUser(userdto);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Actualiza un usuario por su ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente",
+                    content = @Content(schema = @Schema(implementation = User.class)))
+    })
+    @PutMapping("/update/{userId}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Integer userId, @RequestBody UserDto userDto) {
+        try {
+            UserDto updatedUser = userService.updateUser(userId, userDto);
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
 }

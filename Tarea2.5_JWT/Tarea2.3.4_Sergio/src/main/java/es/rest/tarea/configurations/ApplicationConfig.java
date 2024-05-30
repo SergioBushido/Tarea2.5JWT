@@ -30,13 +30,13 @@ public class ApplicationConfig {
 
     private final UserRepository userRepository;
 
-    @Bean
+    @Bean//para obtener los detalles del usuario
     public UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
-    @Bean//utiliza interfaces de security para verificar los usuarios de la bbdd
+    @Bean//sirve para autenticar al usuario basandose en los detalles del usuario
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService());

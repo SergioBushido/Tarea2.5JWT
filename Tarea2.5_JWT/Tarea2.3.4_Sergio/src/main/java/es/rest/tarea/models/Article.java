@@ -1,5 +1,6 @@
 package es.rest.tarea.models;
 
+import es.rest.tarea.models.auth.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,5 +19,7 @@ public class Article {
     private String title;
     private String asbtract;
     private String content;
+
+
 
 }

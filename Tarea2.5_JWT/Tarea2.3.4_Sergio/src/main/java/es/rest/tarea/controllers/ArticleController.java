@@ -1,6 +1,7 @@
 package es.rest.tarea.controllers;
 
 import es.rest.tarea.models.Article;
+import es.rest.tarea.models.dto.ArticleDTO;
 import es.rest.tarea.services.ArticleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,8 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,11 +56,15 @@ public class ArticleController {
             @ApiResponse(responseCode = "201", description = "Artículo creado exitosamente",
                     content = @Content(schema = @Schema(implementation = String.class)))
     })
-    @PostMapping("/articles")
-    public Article createArticle(@RequestBody Article article) {
-        return article;
-    }
+    @PostMapping
+    public ResponseEntity<Article> createArticle(@RequestBody ArticleDTO articleDTO) {
+        Article article = new Article();
+        article.setTitle(articleDTO.getTitle());
+        article.setContent(articleDTO.getContent());
 
+        Article savedArticle = articleService.saveArticle(article);
+        return new ResponseEntity<>(savedArticle, HttpStatus.CREATED);
+    }
     @Operation(summary = "Actualiza un artículo por su ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Artículo actualizado exitosamente",

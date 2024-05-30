@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "DetailController", description = "Controlador para operaciones relacionadas con detalles")
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/details")
 public class DetailController {
 
     @Operation(summary = "Obtiene todos los detalles")
