@@ -16,10 +16,12 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
 
     public List<Article> findAllArticles() {
+
         return articleRepository.findAll();
     }
 
     public Optional<Article> findArticleById(Long id) {
+
         return articleRepository.findById(id);
     }
 
@@ -38,8 +40,13 @@ public class ArticleService {
 
 
 
-    public void deleteArticle(Long id) {
-        articleRepository.deleteById(id);
+    public boolean deleteArticle(Long id) {
+        if (articleRepository.existsById(id)) {
+            articleRepository.deleteById(id);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

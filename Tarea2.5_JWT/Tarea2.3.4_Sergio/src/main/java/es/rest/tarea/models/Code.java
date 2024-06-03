@@ -1,5 +1,7 @@
 package es.rest.tarea.models;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Code {
+
+	@Id
+	@GeneratedValue
 	private Long id;
 	private String packageName;
 	private String file;
