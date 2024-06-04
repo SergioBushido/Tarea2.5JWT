@@ -29,8 +29,14 @@ public class CodeService {
         return codeRepository.save(code);
     }
 
-    public void delete(Code code) {
-        codeRepository.delete(code);
+    public boolean delete(Long id) {
+        if(codeRepository.existsById(id)) {
+            codeRepository.deleteById(id);
+            return true;
+
+        }else {
+            return false;
+        }
     }
 
     //mirar el de phone

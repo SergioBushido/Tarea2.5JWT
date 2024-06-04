@@ -1,6 +1,7 @@
 package es.rest.tarea.controllers;
 
 import es.rest.tarea.models.Code;
+import es.rest.tarea.models.dto.CodeDto;
 import es.rest.tarea.repositories.CodeRepository;
 import es.rest.tarea.services.CodeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -46,20 +50,27 @@ public class CodeController {
     public ResponseEntity<Code> getCodeById(@PathVariable Long id) {
         Optional<Code> code = codeRepository.findById(id);
         return code.map(ResponseEntity::ok)
-                        .orElseGet(() -> ResponseEntity.notFound()
+                .orElseGet(() -> ResponseEntity.notFound()
                         .build());
 
     }
-//POR AQUI
+
+    //POR AQUI
     @Operation(summary = "Crea un nuevo código")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Código creado exitosamente",
                     content = @Content(schema = @Schema(implementation = Code.class)))
     })
-    @PostMapping("/codes")
-    public Code createCode(@RequestBody Code code) {
-        // Implementar lógica para crear un nuevo código
-        return code;
+    @PostMapping
+    public ResponseEntity<Code> createCode(@RequestBody CodeDto codeDto) {
+        Code code = new Code();
+        code.setFile(codeDto.getFile());
+        code.setPackageName(codeDto.getPackageName());
+
+        Code savedCode = codeService.save(code);
+
+
+        return new ResponseEntity<>(savedCode, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Actualiza un código por su ID")
@@ -67,10 +78,12 @@ public class CodeController {
             @ApiResponse(responseCode = "200", description = "Código actualizado exitosamente",
                     content = @Content(schema = @Schema(implementation = Code.class)))
     })
-    @PutMapping("/codes/{id}")
-    public Code updateCode(@PathVariable Long id, @RequestBody Code code) {
-        // Implementar lógica para actualizar un código por ID
-        return code;
+    @PutMapping("/{id}")
+    public Code updateCode(@PathVariable Long id, @RequestBody CodeDto codeDto) {
+        Code codeUpdated = codeService.update(id, codeDto);
+        BeanUtils.copyProperties(codeDto, codeUpdated, "id");
+        return codeRepository.save(codeUpdated);
+
     }
 
     @Operation(summary = "Elimina un código por su ID")
@@ -78,9 +91,12 @@ public class CodeController {
             @ApiResponse(responseCode = "200", description = "Código eliminado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Código no encontrado")
     })
-    @DeleteMapping("/codes/{id}")
-    public void deleteCode(@PathVariable Long id) {
-        // Implementar lógica para eliminar un código por ID
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCode(@PathVariable Long id) {
+        if (codeService.delete(id)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
-
 }
