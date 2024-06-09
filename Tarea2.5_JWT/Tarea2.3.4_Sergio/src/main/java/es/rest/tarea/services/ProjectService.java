@@ -1,16 +1,14 @@
 package es.rest.tarea.services;
 
-import es.rest.tarea.models.Phone;
 import es.rest.tarea.models.Project;
-import es.rest.tarea.models.dto.PhoneDto;
 import es.rest.tarea.models.dto.ProjectDto;
 import es.rest.tarea.repositories.ProjectRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -22,36 +20,30 @@ public class ProjectService {
         return projectRepository.findAll();
     }
 
-    public Project findById(Long id) {
-        return projectRepository.findById(id).get();
+    public Optional<Project> findById(Long id) {
+        return projectRepository.findById(id);
     }
 
     public Project save(Project project) {
         return projectRepository.save(project);
     }
 
-    public void delete(Project project) {
-        projectRepository.delete(project);
+    public void delete(Long id) {
+        projectRepository.deleteById(id);
     }
 
-    public Project create(Project project) {
+    public Project create(ProjectDto projectDto) {
+        Project project = ProjectDto.toEntity(projectDto);
         return projectRepository.save(project);
-
     }
-
 
     @Transactional
-    public Project update(Long id, ProjectDto projectDto) {
-        Project toUpdate = projectRepository.findById(id).orElse(null);
-
-        if (toUpdate != null) {
-            toUpdate.setDescription(projectDto.getDescription());
-            toUpdate.setOpen(projectDto.isOpen());
-            toUpdate.setLanguage(projectDto.getLanguage());
-
-            projectRepository.save(toUpdate);
-        }
-
-        return toUpdate;
+    public Optional<Project> update(Long id, ProjectDto projectDto) {
+        return projectRepository.findById(id)
+                .map(toUpdate -> {
+                    Project updatedProject = ProjectDto.toEntity(projectDto);
+                    updatedProject.setId(toUpdate.getId());
+                    return projectRepository.save(updatedProject);
+                });
     }
 }
