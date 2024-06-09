@@ -10,10 +10,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,7 +62,7 @@ public class CodeController {
                     content = @Content(schema = @Schema(implementation = Code.class)))
     })
     @PostMapping
-    public ResponseEntity<Code> createCode(@RequestBody CodeDto codeDto) {
+    public ResponseEntity<Code> createCode(@Valid @RequestBody CodeDto codeDto) {
         Code code = new Code();
         code.setFile(codeDto.getFile());
         code.setPackageName(codeDto.getPackageName());
