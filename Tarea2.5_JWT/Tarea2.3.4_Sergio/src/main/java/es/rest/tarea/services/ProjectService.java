@@ -40,9 +40,10 @@ public class ProjectService {
     @Transactional
     public Optional<Project> update(Long id, ProjectDto projectDto) {
         return projectRepository.findById(id)
-                .map(toUpdate -> {
+ //map se utiliza para aplicar una función a ese valor si está presente (en toUpdate)
+                   .map(toUpdate -> {
                     Project updatedProject = ProjectDto.toEntity(projectDto);
-                    updatedProject.setId(toUpdate.getId());
+                    updatedProject.setId(toUpdate.getId());//esto asegura que se mantiene el id
                     return projectRepository.save(updatedProject);
                 });
     }
